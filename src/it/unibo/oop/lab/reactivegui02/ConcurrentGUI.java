@@ -20,7 +20,7 @@ import javax.swing.SwingUtilities;
 /**
  *
  */
-public final class ConcurrentGUI extends JFrame {
+public class ConcurrentGUI extends JFrame {
 
     /**
      * 
@@ -44,47 +44,66 @@ public final class ConcurrentGUI extends JFrame {
         this.label = new JLabel("0");
         final JPanel mainPanel = new JPanel(new FlowLayout());
         mainPanel.add(this.label);
-        for (final JButton thisButton : this.buttons) {
+        for (final JButton thisButton : this.getButtons()) {
             mainPanel.add(thisButton);
         }
         this.getContentPane().add(mainPanel);
         this.setVisible(true);
         final Agent agent = new Agent();
         new Thread(agent).start();
-        this.buttons.get(0).addActionListener(new ActionListener() {
+        this.getButtons().get(0).addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(final ActionEvent e) {
-                if (!agent.goUp) {
-                    agent.setGoUp();
-                }
+                agent.setGoUp();
             }
         });
-        this.buttons.get(1).addActionListener(new ActionListener() {
+        this.getButtons().get(1).addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(final ActionEvent e) {
-                if (agent.goUp) {
-                    agent.setGoDown();
-                }
+                agent.setGoDown();
             }
         });
-        this.buttons.get(2).addActionListener(new ActionListener() {
+        this.getButtons().get(2).addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(final ActionEvent e) {
                 agent.stop();
-                for (final JButton thisButton : ConcurrentGUI.this.buttons) {
+                for (final JButton thisButton : ConcurrentGUI.this.getButtons()) {
                     thisButton.setEnabled(false);
                 }
             }
         });
     }
+    
+    /**
+     * 
+     * @param message
+     */
+    public void displayError(final String message) {
+        JOptionPane.showMessageDialog(ConcurrentGUI.this, message, "Error", JOptionPane.ERROR_MESSAGE);
+    }
 
-    private final class Agent implements Runnable {
+    /**
+     * 
+     * @return
+     */
+    public List<JButton> getButtons() {
+        return buttons;
+    }
+
+    /**
+     * 
+     *
+     */
+    protected class Agent implements Runnable {
 
         private volatile boolean stop;
         private int current;
         private volatile boolean goUp;
 
-        private Agent() {
+        /**
+         * 
+         */
+        protected Agent() {
             this.stop = false;
             this.current = 0;
             this.goUp = true;
@@ -94,30 +113,23 @@ public final class ConcurrentGUI extends JFrame {
         public void run() {
             while (!this.stop) {
                 try {
+                    final int showValue = this.current;
                     SwingUtilities.invokeAndWait(new Runnable() {
                         @Override
                         public void run() {
-                            ConcurrentGUI.this.label.setText(Integer.toString(Agent.this.current));
+                            ConcurrentGUI.this.label.setText(Integer.toString(showValue));
                         }
                     });
                     if (this.goUp) {
-                        this.incrementCounter();
+                        this.current++;
                     } else {
-                        this.decrementCounter();
+                        this.current--;
                     }
                     Thread.sleep(SLEEP_TIME);
                 } catch (InvocationTargetException | InterruptedException e) {
-                    JOptionPane.showMessageDialog(ConcurrentGUI.this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    ConcurrentGUI.this.displayError(e.getMessage());
                 }
             }
-        }
-        
-        private synchronized void incrementCounter() {
-            this.current++;
-        }
-        
-        private synchronized void decrementCounter() {
-            this.current--;
         }
 
         private void setGoUp() {
@@ -128,7 +140,10 @@ public final class ConcurrentGUI extends JFrame {
             this.goUp = false;
         }
 
-        private void stop() {
+        /**
+         * 
+         */
+        protected void stop() {
             this.stop = true;
         }
     }
