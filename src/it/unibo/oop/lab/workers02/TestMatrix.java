@@ -6,28 +6,10 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 
 /**
- * 
- * TestMatrix for worker 2.
+ * TestMatrix for worker02.
  *
  */
 public class TestMatrix {
-
-    /*
-     * Si fornisce l'interfaccia SumMatrix, con un metodo per calcolare la
-     * somma degli elementi di una matrice.
-     * 
-     * Realizzare una classe MultiThreadedSumMatrix, con costrutto che accetta
-     * un intero positivo 'n', che implementa tale funzionalità in modo
-     * "multi-threaded", con 'n' Worker che si dividano il compito in modo
-     * sufficientemente omogeneo -- non è necessario che l'ammontare dei compiti
-     * dei singoli Worker siano esattamente equivalenti.
-     * 
-     * Si faccia stampare (su System.out) ad ogni Worker una indicazione di che
-     * porzione del lavoro svolge.
-     * 
-     * All'esecuzione del test qui sotto, le chiamate dovranno dare lo stesso
-     * output, ad eccezione ovviamente dei tempi.
-     */
 
     private static final int SIZE = 10_000;
     private static final double EXPECTED_DELTA = 0.01;
@@ -42,8 +24,8 @@ public class TestMatrix {
         final double[][] matrix = new double[SIZE][SIZE];
         for (double[] d : matrix) {
             for (int i = 0; i < SIZE; i++) {
-                d[i] = i;
-                sum += i;
+                d[i] = 1;
+                sum += 1;
             }
         }
         System.out.println("BTW: the sum with " + SIZE + "*" + SIZE + " elements is: " + sum);

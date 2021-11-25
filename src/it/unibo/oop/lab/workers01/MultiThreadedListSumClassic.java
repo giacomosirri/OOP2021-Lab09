@@ -27,14 +27,14 @@ public final class MultiThreadedListSumClassic implements SumList {
         private long res;
 
         /**
-         * Build a new worker.
+         * Builds a new worker.
          * 
          * @param list
          *            the list to sum
          * @param startpos
          *            the initial position for this worker
          * @param nelem
-         *            the no. of elems to sum up for this worker
+         *            the number of elements to sum for this worker
          */
         Worker(final List<Integer> list, final int startpos, final int nelem) {
             super();
@@ -97,4 +97,5 @@ public final class MultiThreadedListSumClassic implements SumList {
          */
         return sum;
     }
+
 }

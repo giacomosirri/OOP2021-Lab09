@@ -1,12 +1,11 @@
 package it.unibo.oop.lab.workers02;
 
-import static org.junit.Assert.assertArrayEquals;
-
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
+ * Standard implementation of a sum calculator for an arbitrary-sized matrix.
+ * 
  */
 public class MultiThreadedMatrixSumClassic implements SumMatrix {
 
@@ -15,6 +14,7 @@ public class MultiThreadedMatrixSumClassic implements SumMatrix {
     /**
      * 
      * @param nthread
+     *          number of threads performing the sum.
      */
     public MultiThreadedMatrixSumClassic(final int nthread) {
         this.nthreads = nthread;
@@ -22,26 +22,43 @@ public class MultiThreadedMatrixSumClassic implements SumMatrix {
 
     private final class Worker extends Thread {
 
-        private final double[] elems;
-        private final int first;
-        private final int nelems;
+        private final double[][] elems;
+        private final int firstRow;
+        private final int nRows;
         private int result;
 
-        private Worker(final double[] elems, final int first, final int nelems) {
+        /**
+         * Builds a new worker.
+         * 
+         * @param elems
+         *            the matrix to sum
+         * @param row
+         *            the initial row for this worker
+         * @param nRows
+         *            the number of rows to sum for this worker
+         */
+        Worker(final double[][] elems, final int row, final int nRows) {
             this.elems = elems;
-            this.first = first;
-            this.nelems = nelems;
+            this.firstRow = row;
+            this.nRows = nRows;
             this.result = 0;
         }
 
         @Override
         public void run() {
-            System.out.println("Working from position " + this.first + " to position " + (this.first + this.nelems - 1));
-            for (int i = this.first; i < elems.length && i < first + nelems; i++) {
-                this.result += this.elems[i];
+            System.out.println("Working from row " + this.firstRow + " to row " + (this.firstRow + this.nRows - 1));
+            for (int i = 0; i < nRows && i + firstRow < this.elems.length; i++) {
+                for (int j = 0; j < this.elems[i].length; j++) {
+                    this.result += this.elems[i][j];
+                }
             }
         }
 
+        /**
+         * Returns the result of summing up the double values within the matrix.
+         * 
+         * @return the sum of every element in the matrix
+         */
         public double getResult() {
             return this.result;
         }
@@ -51,28 +68,22 @@ public class MultiThreadedMatrixSumClassic implements SumMatrix {
     public double sum(final double[][] matrix) {
         double sum = 0;
         final int rows = matrix.length;
-        final int columns = matrix[0].length;
-        final int size = matrix[0].length / this.nthreads + matrix[0].length % this.nthreads;
+        final int assignRows = rows / this.nthreads + rows % this.nthreads;
         final List<Worker> workers = new ArrayList<>(this.nthreads);
-        for (int i = 0; i < rows; i++) {
-            for (int start = 0; start < columns; start += size) {
-                workers.add(new Worker(matrix[i], start, size));
-            }
-            for (final Worker thisWorker : workers) {
-                thisWorker.start();
-            }
-
-            for (final Worker thisWorker : workers) {
-                try {
-                    thisWorker.join();
-                    sum += thisWorker.getResult();
-                } catch (InterruptedException e) {
-                    throw new IllegalStateException(e);
-                }
-            }
-            workers.clear();
+        for (int start = 0; start < rows; start += assignRows) {
+            workers.add(new Worker(matrix, start, assignRows));
         }
-
+        for (final Worker thisWorker : workers) {
+            thisWorker.start();
+        }
+        for (final Worker thisWorker : workers) {
+            try {
+                thisWorker.join();
+                sum += thisWorker.getResult();
+            } catch (InterruptedException e) {
+                throw new IllegalStateException(e);
+            }
+        }
         return sum;
     }
 
