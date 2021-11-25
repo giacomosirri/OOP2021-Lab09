@@ -25,7 +25,7 @@ public class AnotherConcurrentGUI extends ConcurrentGUI {
         new Thread(new Timer()).start();
     }
 
-    private final class Timer extends Agent implements Runnable  {
+    private final class Timer implements Runnable  {
 
         private static final long SLEEP_TIME = 10_000;
 
