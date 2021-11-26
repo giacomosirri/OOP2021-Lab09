@@ -1,8 +1,5 @@
 package it.unibo.oop.lab.reactivegui02;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Toolkit;
@@ -22,56 +19,66 @@ import javax.swing.SwingUtilities;
  */
 public class ConcurrentGUI extends JFrame {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = -718335728756022921L;
     private static final long SLEEP_TIME = 100;
     private static final double WIDTH_PERC = 0.2;
     private static final double HEIGHT_PERC = 0.1;
-    private final List<JButton> buttons;
+    private final Agent agent;
+    private final JButton upButton;
+    private final JButton downButton;
+    private final JButton stopButton;
     private final JLabel label;
 
     /**
      * 
      */
     public ConcurrentGUI() {
-        super();
+        // graphic elements initialization
         final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         this.setSize((int) (screenSize.getWidth() * WIDTH_PERC), (int) (screenSize.getHeight() * HEIGHT_PERC));
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-        this.buttons = new ArrayList<>(Arrays.asList(new JButton("up"), new JButton("down"), new JButton("stop")));
-        this.label = new JLabel("0");
         final JPanel mainPanel = new JPanel(new FlowLayout());
+        this.label = new JLabel("0");
         mainPanel.add(this.label);
-        for (final JButton thisButton : this.getButtons()) {
-            mainPanel.add(thisButton);
-        }
+        this.upButton = new JButton("up");
+        this.downButton = new JButton("down");
+        this.stopButton = new JButton("stop");
+        mainPanel.add(upButton);
+        mainPanel.add(downButton);
+        mainPanel.add(stopButton);
         this.getContentPane().add(mainPanel);
         this.setVisible(true);
-        final Agent agent = new Agent();
-        new Thread(agent).start();
-        this.getButtons().get(0).addActionListener(new ActionListener() {
+        // thread initialization and setup of buttons' functions
+        this.agent = new Agent();
+        new Thread(this.agent).start();
+        this.upButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(final ActionEvent e) {
                 agent.setGoUp();
             }
         });
-        this.getButtons().get(1).addActionListener(new ActionListener() {
+        this.downButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(final ActionEvent e) {
                 agent.setGoDown();
             }
         });
-        this.getButtons().get(2).addActionListener(new ActionListener() {
+        this.stopButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(final ActionEvent e) {
-                agent.stop();
-                for (final JButton thisButton : ConcurrentGUI.this.getButtons()) {
-                    thisButton.setEnabled(false);
-                }
+                ConcurrentGUI.this.doOnStop();
             }
         });
+    }
+
+    /**
+     * 
+     */
+    public void doOnStop() {
+        agent.stop();
+        this.upButton.setEnabled(false);
+        this.downButton.setEnabled(false);
+        this.stopButton.setEnabled(false);
     }
 
     /**
@@ -79,22 +86,14 @@ public class ConcurrentGUI extends JFrame {
      * @param message
      */
     public void displayError(final String message) {
-        JOptionPane.showMessageDialog(ConcurrentGUI.this, message, "Error", JOptionPane.ERROR_MESSAGE);
-    }
-
-    /**
-     * 
-     * @return
-     */
-    public List<JButton> getButtons() {
-        return buttons;
+        JOptionPane.showMessageDialog(this, message, "Error", JOptionPane.ERROR_MESSAGE);
     }
 
     /**
      * 
      *
      */
-    protected class Agent implements Runnable {
+    private final class Agent implements Runnable {
 
         private volatile boolean stop;
         private int current;
@@ -103,7 +102,7 @@ public class ConcurrentGUI extends JFrame {
         /**
          * 
          */
-        protected Agent() {
+        private Agent() {
             this.stop = false;
             this.current = 0;
             this.goUp = true;
@@ -140,10 +139,7 @@ public class ConcurrentGUI extends JFrame {
             this.goUp = false;
         }
 
-        /**
-         * 
-         */
-        protected void stop() {
+        private void stop() {
             this.stop = true;
         }
     }
