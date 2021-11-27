@@ -85,14 +85,15 @@ public final class ConcurrentGUI extends JFrame {
             while (!this.stop) {
                 try {
                     /*
-                     * All the operations on the GUI must be performed by the
-                     * Event-Dispatch Thread (EDT)!
+                     * All the operations on the GUI must be performed by the Event-Dispatch Thread (EDT)!
                      */
+                    /* ANSWER: final String nextValue = String.valueOf(this.counter); */
                     SwingUtilities.invokeAndWait(new Runnable() {
                         @Override
                         public void run() {
                             // This will happen in the EDT: since i'm reading counter it needs to be volatile.
                             ConcurrentGUI.this.display.setText(Integer.toString(Agent.this.counter));
+                            /* ConcurrentGUI.this.display.setText(nextValue); */
                         }
                     });
                     /*
@@ -101,7 +102,8 @@ public final class ConcurrentGUI extends JFrame {
                      * we do synchronization with invokeAndWait, so it can be ignored.
                      *
                      * EXERCISE: Can you think of a solution that doesn't require counter to be volatile? (without
-                     * using synchronized or locks)
+                     * using synchronized or locks) --> ANSWER: we should copy the value of the counter into a new 
+                     * variable, then use the latter as the text to set (look above).
                      */
                     this.counter++;
                     Thread.sleep(100);

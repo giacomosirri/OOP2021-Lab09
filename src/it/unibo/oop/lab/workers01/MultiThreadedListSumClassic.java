@@ -14,7 +14,7 @@ public final class MultiThreadedListSumClassic implements SumList {
     /**
      * 
      * @param nthread
-     *            no. of thread performing the sum.
+     *            number of threads performing the sum.
      */
     public MultiThreadedListSumClassic(final int nthread) {
         this.nthread = nthread;
@@ -79,7 +79,7 @@ public final class MultiThreadedListSumClassic implements SumList {
             w.start();
         }
         /*
-         * Wait for every one of them to finish. This operation is _way_ better done by
+         * Wait for every one of them to finish. This operation is WAY better done by
          * using barriers and latches, and the whole operation would be better done with
          * futures.
          */

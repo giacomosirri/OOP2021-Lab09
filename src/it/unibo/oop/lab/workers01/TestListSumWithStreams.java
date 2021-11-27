@@ -8,9 +8,8 @@ import java.util.stream.IntStream;
 
 import org.junit.Test;
 
-/**
- * 
- * TestMatrix for worker 1.
+/** 
+ * TestMatrix for workers01.
  *
  */
 public class TestListSumWithStreams {
@@ -40,7 +39,7 @@ public class TestListSumWithStreams {
                 .sum();
         System.out.println("BTW: the sum with " + SIZE + " elements is: " + sum);
         /*
-         * Prepare time ant test with different number of threads
+         * Prepare time and test with different number of threads
          */
         long time;
         for (final int threads: new int[] { 1, 2, 3, 8, 16, 32 }) {

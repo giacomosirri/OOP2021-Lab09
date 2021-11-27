@@ -6,10 +6,10 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 
 /**
- * TestMatrix for worker02.
+ * TestMatrix for workers02.
  *
  */
-public class TestMatrix {
+public class TestMatrixSumClassic {
 
     private static final int SIZE = 10_000;
     private static final double EXPECTED_DELTA = 0.01;
@@ -31,9 +31,9 @@ public class TestMatrix {
         System.out.println("BTW: the sum with " + SIZE + "*" + SIZE + " elements is: " + sum);
         long time;
         for (final int threads: new int[] { 1, 2, 3, 8, 16, 32, 100 }) {
-            final SumMatrix sumList = new MultiThreadedMatrixSumClassic(threads);
+            final SumMatrix sumMatrix = new MultiThreadedMatrixSumClassic(threads);
             time = System.nanoTime();
-            assertEquals(sum, sumList.sum(matrix), EXPECTED_DELTA);
+            assertEquals(sum, sumMatrix.sum(matrix), EXPECTED_DELTA);
             time = System.nanoTime() - time;
             System.out.println("Tried with " + threads + " thread"
                     + (threads == 1 ? "" : "s") + ": "

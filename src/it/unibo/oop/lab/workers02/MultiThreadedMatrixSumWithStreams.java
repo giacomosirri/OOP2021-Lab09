@@ -3,7 +3,8 @@ package it.unibo.oop.lab.workers02;
 import java.util.stream.IntStream;
 
 /**
- * 
+ * A {@link it.unibo.oop.lab.workers02.MultiThreadedMatrixSumClassic}
+ * implemented using streams (and lambda expressions).
  *
  */
 public class MultiThreadedMatrixSumWithStreams implements SumMatrix {
@@ -36,7 +37,7 @@ public class MultiThreadedMatrixSumWithStreams implements SumMatrix {
          *            the number of rows to sum for this worker
          */
         Worker(final double[][] elems, final int row, final int nRows) {
-            this.elems = elems;
+            this.elems = elems.clone();
             this.firstRow = row;
             this.nRows = nRows;
             this.result = 0;

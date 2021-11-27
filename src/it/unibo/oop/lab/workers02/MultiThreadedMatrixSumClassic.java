@@ -38,7 +38,7 @@ public class MultiThreadedMatrixSumClassic implements SumMatrix {
          *            the number of rows to sum for this worker
          */
         Worker(final double[][] elems, final int row, final int nRows) {
-            this.elems = elems;
+            this.elems = elems.clone();
             this.firstRow = row;
             this.nRows = nRows;
             this.result = 0;
@@ -68,15 +68,19 @@ public class MultiThreadedMatrixSumClassic implements SumMatrix {
     public double sum(final double[][] matrix) {
         double sum = 0;
         final int rows = matrix.length;
+        /*
+         * Splits rows "equally" among threads - each thread will
+         * perform the calculation only on its rows
+         */
         final int assignRows = rows / this.nthreads + rows % this.nthreads;
         final List<Worker> workers = new ArrayList<>(this.nthreads);
         for (int start = 0; start < rows; start += assignRows) {
             workers.add(new Worker(matrix, start, assignRows));
         }
-        for (final Worker thisWorker : workers) {
+        for (final Worker thisWorker: workers) {
             thisWorker.start();
         }
-        for (final Worker thisWorker : workers) {
+        for (final Worker thisWorker: workers) {
             try {
                 thisWorker.join();
                 sum += thisWorker.getResult();

@@ -8,8 +8,7 @@ import java.util.List;
 import org.junit.Test;
 
 /**
- * 
- * TestMatrix for worker 1.
+ * TestMatrix for workers01.
  *
  */
 public class TestListSumClassic {
